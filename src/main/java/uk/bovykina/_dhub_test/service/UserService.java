@@ -1,52 +1,34 @@
 package uk.bovykina._dhub_test.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.bovykina._dhub_test.model.dto.UserDto;
-import uk.bovykina._dhub_test.model.entity.User;
+import uk.bovykina._dhub_test.mapper.UserMapper;
 import uk.bovykina._dhub_test.repo.UserRepo;
 
-import java.util.Optional;
-
 @Service
-@AllArgsConstructor
-public class UserService {
+@RequiredArgsConstructor
+public class UserService implements UserServiceInt {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepo userRepo;
+    private final UserMapper userMapper;
 
     public UserDto getUserByLastName(String lastName) {
-        User user = userRepo.findByLastName(lastName)
-                .orElseThrow(() -> new IllegalArgumentException("User with last name " + lastName + " was not found."));
-        return toDto(user);
+        logger.info("Fetching user by last name: {}", lastName);
+        return userRepo.findByLastName(lastName)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> {
+                    logger.error("User not found with last name: {}", lastName);
+                    return new IllegalArgumentException("User not found");
+                });
     }
 
     public void createUser(UserDto userDto) {
-        if (userDto == null) {
-            throw new IllegalArgumentException("User data cannot be null.");
-        }
-
-        Optional<User> existingUser = userRepo.findByLastName(userDto.getLastName());
-        if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("User with last name " + userDto.getLastName() + " already exists.");
-        }
-
-        User user = dtoToEntity(userDto);
-        userRepo.save(user);
-    }
-
-    private User dtoToEntity(UserDto userDto) {
-
-        return User.builder()
-                .firstName(userDto.getFirstName())
-                .lastName(userDto.getLastName())
-                .phone(userDto.getPhone())
-                .build();
-    }
-
-    private UserDto toDto(User user) {
-        return UserDto.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phone(user.getPhone())
-                .build();
+        logger.info("Creating user with last name: {}", userDto.getLastName());
+        userRepo.save(userMapper.toEntity(userDto));
+        logger.info("User created successfully: {}", userDto.getLastName());
     }
 }
