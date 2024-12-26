@@ -20,7 +20,8 @@ public class Company {
     private String name;
     private Float budget;
 
-    @OneToMany
-    @JoinColumn(name = "company_id")
-    private List<User> employees;
+    @ElementCollection
+    @CollectionTable(name = "company_employees", joinColumns = @JoinColumn(name = "company_id"))
+    @Column(name = "employee_id")
+    private List<Long> employeeIds;
 }
