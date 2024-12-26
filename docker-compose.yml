@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - discovery
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  company-service:
+    build:
+      context: ./company-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - discovery
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  discovery:
+    image: springcloud/spring-cloud-netflix-eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+
+  gateway:
+    image: gateway-service:latest
+    build:
+      context: ./gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - discovery
