@@ -2,6 +2,8 @@ package uk.bovykina._dhub_test.controller;
 
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uk.bovykina._dhub_test.model.dto.CompanyDto;
@@ -17,7 +19,7 @@ public class CompanyController {
     private final CompanyServiceInt companyService;
 
     @GetMapping("/name/{name}")
-    public CompanyDto getCompanyByName(@PathVariable String name) {
+    public CompanyDto getCompanyByName(@PathVariable @NotEmpty @Size(max = 50) String name) {
         logger.info("Fetching company by name: {}", name);
         CompanyDto company = companyService.getCompanyByName(name);
         logger.info("Fetched company: {}", company);

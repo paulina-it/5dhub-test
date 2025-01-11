@@ -2,6 +2,8 @@ package uk.bovykina._dhub_test.controller;
 
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uk.bovykina._dhub_test.model.dto.UserDto;
@@ -18,7 +20,7 @@ public class UserController {
     private final UserServiceInt userService;
 
     @GetMapping("/{lastName}")
-    public UserDto getUserByLastName(@PathVariable String lastName) {
+    public UserDto getUserByLastName(@PathVariable @NotEmpty @Size(max = 50) String lastName) {
         logger.info("Fetching user by last name: {}", lastName);
         UserDto user = userService.getUserByLastName(lastName);
         logger.info("Fetched user: {}", user);
