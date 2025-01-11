@@ -12,7 +12,6 @@ import uk.bovykina._dhub_test.repo.UserRepo;
 @RequiredArgsConstructor
 public class UserService implements UserServiceInt {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-
     private final UserRepo userRepo;
     private final UserMapper userMapper;
 
